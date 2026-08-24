@@ -1,32 +1,26 @@
 generic-app:
   nameOverride: "teupadel-api"
-
   namespace:
     create: true
     name: "teupadel"
-
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api"
-    tag: "latest"
-
+    tag: "640d1fd"
   service:
     port: 80
     targetPort: 8080 # porta real que o container escuta
-
   httpRoute:
     enabled: true
     gateway:
       name: nginx-gateway-teupadel-com
       namespace: nginx-gateway
     hostnames:
-      - "api.teupadel.com"
-
+    - "api.teupadel.com"
   configMap:
     enabled: true
     injectAsEnv: true
     data:
       ANTHROPIC_MODEL: "claude-sonnet-5"
-
   externalSecrets:
     enabled: true
     secretStoreRef:
@@ -34,6 +28,6 @@ generic-app:
       kind: ClusterSecretStore
     secretName: "teupadel-api-secret"
     data:
-      - secretKey: ANTHROPIC_API_KEY
-        remoteRef:
-          key: /homelab/teupadel/anthropic-api-key
+    - secretKey: ANTHROPIC_API_KEY
+      remoteRef:
+        key: /homelab/teupadel/anthropic-api-key
