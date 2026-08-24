@@ -3,10 +3,19 @@ kind: Application
 metadata:
   name: teupadel-api
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: teupadel-api=344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api
+    argocd-image-updater.argoproj.io/teupadel-api.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/teupadel-api.allow-tags: regexp:^[0-9a-f]{7}$
+    argocd-image-updater.argoproj.io/teupadel-api.helm.image-tag: generic-app.image.tag
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-git-creds
+    argocd-image-updater.argoproj.io/write-back-target: helmvalues:helm/api/values.yaml
 spec:
   project: homelab
   source:
-    repoURL: https://github.com/cmoreira-dev/gitops.padel-movement-analysis.git
+    # Era gitops.padel-movement-analysis (nome antigo, pré-rename) — funcionava
+    # só por causa do redirect 301 do GitHub, não é garantido para sempre.
+    repoURL: https://github.com/cmoreira-dev/gitops.teupadel.com.git
     targetRevision: main
     path: helm/api
   destination:
