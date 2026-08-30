@@ -9,13 +9,9 @@ generic-app:
   service:
     port: 80
     targetPort: 8080 # porta real que o container escuta
-  httpRoute:
-    enabled: true
-    gateway:
-      name: nginx-gateway-teupadel-com
-      namespace: nginx-gateway
-    hostnames:
-    - "api.teupadel.com"
+  # Sem httpRoute: a API não é exposta publicamente. A UI fala com ela pelo
+  # Service interno (teupadel-api.teupadel.svc.cluster.local). Ver
+  # ui/values.yaml (PADEL_API_URL) e o cloudflared em gitops.core-addons.
   configMap:
     enabled: true
     injectAsEnv: true
