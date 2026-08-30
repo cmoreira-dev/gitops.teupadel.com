@@ -19,23 +19,10 @@ generic-app:
   configMap:
     enabled: true
     injectAsEnv: true
-    # Renamed from VITE_PADEL_API_URL (2026-08): a UI passou de Vite/CSR para
-    # Next.js/SSR e agora lê esta env var server-side (next.config.js rewrites),
-    # nunca no browser. ORDEM DE DEPLOY: este rename só pode ir para produção
-    # depois de a imagem `teupadel/ui` correspondente (a que já lê
-    # PADEL_API_URL) estar buildada e publicada no ECR — caso contrário o pod
-    # sobe com a imagem antiga (que ainda espera VITE_PADEL_API_URL) e fica
-    # sem saber o endereço da API. Fazer merge deste values.yaml só depois de
-    # confirmar que a tag da imagem em `image.tag` já corresponde ao build novo.
     data:
-      PADEL_API_URL: "https://api.teupadel.com"
-externalSecrets:
-  enabled: true
-  secretStoreRef:
-    name: aws-ssm
-    kind: ClusterSecretStore
-  secretName: "teupadel-ui-secret"
-  data:
-  - secretKey: some-key
-    remoteRef:
-      key: /homelab/teupadel/anthropic_ui_key
+      # A UI (Next.js/SSR) só fala com a API server-side: o browser chama
+      # `/analyse` na própria UI e o Route Handler `src/app/analyse/route.js`
+      # faz proxy para `${PADEL_API_URL}/analyse`, lendo esta env var a cada
+      # pedido. Como é pod->pod, aponta para o Service interno em vez do
+      # domínio público (api.teupadel.com já não precisa de estar exposto).
+      PADEL_API_URL: "http://teupadel-api.teupadel.svc.cluster.local"
