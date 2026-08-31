@@ -33,6 +33,12 @@ generic-app:
       # (api.ia.pose-estimation). Benchmark: 150 frames 1080p em ~10s (LXC/CPU
       # eram ~87s). O LXC 192.168.1.20 foi desativado/removido no Proxmox (2026-08).
       PROCESSOR_URL: "http://teupadel-processor.teupadel.svc.cluster.local:8000"
+      # A chamada do relatório passa pelo passthrough Anthropic do LiteLLM
+      # (llm.cmoreira.dev / litellm ns) — spend por virtual key, fallback,
+      # chave central. O body é encaminhado cru → tool use / prompt caching /
+      # thinking intactos. `ANTHROPIC_API_KEY` (abaixo) passa a ser a virtual
+      # key do LiteLLM. Remover esta var = volta a chamar a Anthropic direto.
+      ANTHROPIC_BASE_URL: "http://litellm.litellm.svc.cluster.local:4000/anthropic"
       # --- Telemetria / OpenTelemetry (ver api.ia.teupadel.com/telemetry.py) ---
       # O Alloy worker (gitops.monitoring) já expõe um receiver OTLP e encaminha
       # para Grafana Cloud (Tempo/Mimir/Loki). Se OTEL_EXPORTER_OTLP_ENDPOINT for
@@ -49,6 +55,9 @@ generic-app:
       kind: ClusterSecretStore
     secretName: "teupadel-api-secret"
     data:
+    # Virtual key do LiteLLM (não a chave Anthropic real — ver ANTHROPIC_BASE_URL
+    # no configMap). Rollback: voltar a /homelab/teupadel/anthropic-api-key e
+    # remover ANTHROPIC_BASE_URL.
     - secretKey: ANTHROPIC_API_KEY
       remoteRef:
-        key: /homelab/teupadel/anthropic-api-key
+        key: /homelab/teupadel/litellm-key
