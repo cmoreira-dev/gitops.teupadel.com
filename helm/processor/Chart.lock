@@ -1,6 +1,6 @@
 dependencies:
 - name: generic-app
   repository: oci://ghcr.io/cmoreira-dev/charts
-  version: 0.6.0
-digest: sha256:ab11e6c150be2d30c2bd8ae207cbf374039adf93af9152028b8938aad00ab936
-generated: "2026-08-31T21:11:31.711355+01:00"
+  version: 0.7.0
+digest: sha256:5a1f228144c18953c9db026a71e4bf672d76303083be343ba211712bd6d5646a
+generated: "2026-08-31T21:49:05.714966+01:00"
