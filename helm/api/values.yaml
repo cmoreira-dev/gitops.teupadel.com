@@ -31,7 +31,7 @@ generic-app:
       ANTHROPIC_MODEL: "claude-sonnet-5"
       # Cutover feito 2026-08-31: o padel-processor corre no cluster com GPU
       # (api.ia.pose-estimation). Benchmark: 150 frames 1080p em ~10s (LXC/CPU
-      # eram ~87s). O LXC 192.168.1.20 pode ser desligado.
+      # eram ~87s). O LXC 192.168.1.20 foi desativado/removido no Proxmox (2026-08).
       PROCESSOR_URL: "http://teupadel-processor.teupadel.svc.cluster.local:8000"
       # --- Telemetria / OpenTelemetry (ver api.ia.teupadel.com/telemetry.py) ---
       # O Alloy worker (gitops.monitoring) já expõe um receiver OTLP e encaminha
