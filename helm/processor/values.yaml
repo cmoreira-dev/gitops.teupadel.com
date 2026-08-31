@@ -31,6 +31,16 @@ generic-app:
   # generic-app 0.5.0 herda o securityContext restricted de 0.4.0. O processor
   # corre como non-root (uid 10001) e só escreve em /tmp e no home do appuser
   # (cache CUDA) — o default restricted não mete readOnlyRootFilesystem, adota limpo.
+  # `runAsUser` explícito: a imagem faz `USER 10001`, mas o kubelet com
+  # runAsNonRoot precisa do UID numérico aqui também para verificar.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop: ["ALL"]
 
   probes:
     startup:
