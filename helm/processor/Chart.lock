@@ -3,4 +3,4 @@ dependencies:
   repository: oci://ghcr.io/cmoreira-dev/charts
   version: 0.6.0
 digest: sha256:ab11e6c150be2d30c2bd8ae207cbf374039adf93af9152028b8938aad00ab936
-generated: "2026-08-31T15:01:07.177659+01:00"
+generated: "2026-08-31T15:07:40.676137+01:00"
