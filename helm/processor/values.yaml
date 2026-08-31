@@ -1,0 +1,59 @@
+generic-app:
+  nameOverride: "teupadel-processor"
+  namespace:
+    create: true
+    name: "teupadel"
+  image:
+    repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/processor"
+    tag: "dc0fb18"
+  service:
+    port: 8000
+    targetPort: 8000
+  # Sem httpRoute: só a teupadel-api fala com este serviço, pelo Service interno
+  # (teupadel-processor.teupadel.svc.cluster.local:8000). Ver api/values.yaml
+  # (PROCESSOR_URL) e o api.ia.teupadel.com.
+
+  # GPU — a RTX 3060 no proxmox-k8s-gpu-worker-1. Time-slicing (replicas: 2) no
+  # nvidia-device-plugin (gitops.core-addons) permite partilhar com o Ollama.
+  runtimeClassName: "nvidia"
+  nodeSelector:
+    nvidia.com/gpu.present: "true"
+
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "3"
+      memory: "4Gi"
+      nvidia.com/gpu: 1
+
+  # generic-app 0.5.0 herda o securityContext restricted de 0.4.0. O processor
+  # corre como non-root (uid 10001) e só escreve em /tmp e no home do appuser
+  # (cache CUDA) — o default restricted não mete readOnlyRootFilesystem, adota limpo.
+
+  probes:
+    startup:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
+      # CUDA init + carregamento do modelo ONNX pode levar ~30-60s no 1º arranque.
+      failureThreshold: 30
+      periodSeconds: 5
+    readiness:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
+      periodSeconds: 10
+
+  configMap:
+    enabled: true
+    injectAsEnv: true
+    data:
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-worker.alloy.svc.cluster.local:4318"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
+      OTEL_SERVICE_NAME: "teupadel-processor"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=teupadel,deployment.environment=production"
+      OTEL_TRACES_SAMPLER: "parentbased_always_on"

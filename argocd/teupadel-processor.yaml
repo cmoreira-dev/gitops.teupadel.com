@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: teupadel-processor
+  namespace: argocd
+spec:
+  project: homelab
+  source:
+    repoURL: https://github.com/cmoreira-dev/gitops.teupadel.com.git
+    targetRevision: main
+    path: helm/processor
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: teupadel
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
