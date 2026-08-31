@@ -5,7 +5,7 @@ generic-app:
     name: "teupadel"
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api"
-    tag: "f7e4404"
+    tag: "ef7127d"
   service:
     port: 80
     targetPort: 8080 # porta real que o container escuta
@@ -14,7 +14,6 @@ generic-app:
   # ui/values.yaml (PADEL_API_URL) e o cloudflared em gitops.core-addons.
 
   replicaCount: 2
-
   # Cada /analyse segura o vídeo em memória durante ~110s. Com 256Mi o pod era
   # OOMKilled num upload de ~70MB (confirmado 2026-08-31). 1Gi dá folga para
   # 1-2 análises concorrentes; o streaming do upload fica para depois.
@@ -25,7 +24,6 @@ generic-app:
     limits:
       cpu: "1"
       memory: "1Gi"
-
   configMap:
     enabled: true
     injectAsEnv: true
