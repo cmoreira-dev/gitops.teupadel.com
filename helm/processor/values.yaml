@@ -63,6 +63,10 @@ generic-app:
         path: /health
         port: http
       periodSeconds: 10
+      # Tolerante: a análise corre num thread (não bloqueia o /health), mas sob
+      # carga de GC / troca de contexto de GPU o probe pode passar de 1s.
+      timeoutSeconds: 5
+      failureThreshold: 6
 
   configMap:
     enabled: true
