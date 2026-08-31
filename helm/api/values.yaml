@@ -17,6 +17,15 @@ generic-app:
     injectAsEnv: true
     data:
       ANTHROPIC_MODEL: "claude-sonnet-5"
+      # --- Telemetria / OpenTelemetry (ver api.ia.teupadel.com/telemetry.py) ---
+      # O Alloy worker (gitops.monitoring) já expõe um receiver OTLP e encaminha
+      # para Grafana Cloud (Tempo/Mimir/Loki). Se OTEL_EXPORTER_OTLP_ENDPOINT for
+      # removido, a instrumentação fica no-op e a app continua a servir.
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy-worker.alloy.svc.cluster.local:4318"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
+      OTEL_SERVICE_NAME: "teupadel-api"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=teupadel,deployment.environment=production"
+      OTEL_TRACES_SAMPLER: "parentbased_always_on"
   externalSecrets:
     enabled: true
     secretStoreRef:
