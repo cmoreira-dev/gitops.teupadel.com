@@ -29,11 +29,10 @@ generic-app:
     injectAsEnv: true
     data:
       ANTHROPIC_MODEL: "claude-sonnet-5"
-      # Pin ao LXC até o cutover. O `padel-processor` está a migrar para o
-      # cluster (api.ia.pose-estimation → K8s/GPU); quando o Service
-      # teupadel-processor.teupadel.svc.cluster.local:8000 estiver Healthy,
-      # trocar por ele (ou remover — é o novo default do código).
-      PROCESSOR_URL: "http://192.168.1.20:8000"
+      # Cutover feito 2026-08-31: o padel-processor corre no cluster com GPU
+      # (api.ia.pose-estimation). Benchmark: 150 frames 1080p em ~10s (LXC/CPU
+      # eram ~87s). O LXC 192.168.1.20 pode ser desligado.
+      PROCESSOR_URL: "http://teupadel-processor.teupadel.svc.cluster.local:8000"
       # --- Telemetria / OpenTelemetry (ver api.ia.teupadel.com/telemetry.py) ---
       # O Alloy worker (gitops.monitoring) já expõe um receiver OTLP e encaminha
       # para Grafana Cloud (Tempo/Mimir/Loki). Se OTEL_EXPORTER_OTLP_ENDPOINT for
