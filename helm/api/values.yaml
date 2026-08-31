@@ -12,11 +12,30 @@ generic-app:
   # Sem httpRoute: a API não é exposta publicamente. A UI fala com ela pelo
   # Service interno (teupadel-api.teupadel.svc.cluster.local). Ver
   # ui/values.yaml (PADEL_API_URL) e o cloudflared em gitops.core-addons.
+
+  replicaCount: 2
+
+  # Cada /analyse segura o vídeo em memória durante ~110s. Com 256Mi o pod era
+  # OOMKilled num upload de ~70MB (confirmado 2026-08-31). 1Gi dá folga para
+  # 1-2 análises concorrentes; o streaming do upload fica para depois.
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
   configMap:
     enabled: true
     injectAsEnv: true
     data:
       ANTHROPIC_MODEL: "claude-sonnet-5"
+      # Pin ao LXC até o cutover. O `padel-processor` está a migrar para o
+      # cluster (api.ia.pose-estimation → K8s/GPU); quando o Service
+      # teupadel-processor.teupadel.svc.cluster.local:8000 estiver Healthy,
+      # trocar por ele (ou remover — é o novo default do código).
+      PROCESSOR_URL: "http://192.168.1.20:8000"
       # --- Telemetria / OpenTelemetry (ver api.ia.teupadel.com/telemetry.py) ---
       # O Alloy worker (gitops.monitoring) já expõe um receiver OTLP e encaminha
       # para Grafana Cloud (Tempo/Mimir/Loki). Se OTEL_EXPORTER_OTLP_ENDPOINT for
