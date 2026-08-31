@@ -19,6 +19,12 @@ generic-app:
   nodeSelector:
     nvidia.com/gpu.present: "true"
 
+  # Só há 2 slots de GPU (time-slicing replicas: 2) e o Ollama tem 1. Um
+  # RollingUpdate faria surge de um 2º pod do processor que não conseguiria
+  # agendar → rollout preso. Recreate: mata o pod antigo primeiro.
+  strategy:
+    type: Recreate
+
   resources:
     requests:
       cpu: "500m"
