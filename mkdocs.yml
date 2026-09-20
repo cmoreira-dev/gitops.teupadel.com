@@ -1,0 +1,8 @@
+site_name: 'gitops.teupadel.com'
+site_description: 'GitOps deployment (ArgoCD/Helm) for teupadel.com'
+
+nav:
+  - Home: index.md
+
+plugins:
+  - techdocs-core
