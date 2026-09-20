@@ -12,6 +12,7 @@ metadata:
     github.com/project-slug: cmoreira-dev/gitops.teupadel.com
     backstage.io/kubernetes-id: homelab
     argocd/app-name: 'teupadel-api,teupadel-processor,teupadel-ui'
+    backstage.io/techdocs-ref: dir:.
   links:
     - url: 'https://www.teupadel.com'
       title: teupadel.com
