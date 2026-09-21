@@ -11,7 +11,13 @@ metadata:
   annotations:
     github.com/project-slug: cmoreira-dev/gitops.teupadel.com
     backstage.io/kubernetes-id: homelab
-    argocd/app-name: 'teupadel-api,teupadel-processor,teupadel-ui'
+    # argocd/app-name does NOT split on commas in @backstage-community/
+    # plugin-argocd — it only splits argocd/instance-name that way. A CSV
+    # value here gets sent to ArgoCD's API as one literal (nonexistent) app
+    # name, silently returning zero results. app-selector is the documented
+    # way to match multiple Applications; the label lives on each
+    # Application manifest under argocd/ in this repo.
+    argocd/app-selector: 'homelab.cmoreira.dev/catalog-component=teupadel-gitops'
     backstage.io/techdocs-ref: dir:.
   links:
     - url: 'https://www.teupadel.com'

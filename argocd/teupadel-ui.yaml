@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: teupadel-ui
   namespace: argocd
+  labels:
+    homelab.cmoreira.dev/catalog-component: teupadel-gitops
 spec:
   project: homelab
   source:
