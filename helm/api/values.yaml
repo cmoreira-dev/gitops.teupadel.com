@@ -48,6 +48,9 @@ generic-app:
       OTEL_SERVICE_NAME: "teupadel-api"
       OTEL_RESOURCE_ATTRIBUTES: "service.namespace=teupadel,deployment.environment=production"
       OTEL_TRACES_SAMPLER: "parentbased_always_on"
+      # Nome fixo, não segredo — definido em gitops.cnpg/kustomize/teupadel/database.yaml
+      # (bootstrap.initdb.database).
+      PGDATABASE: "teupadeldb"
   externalSecrets:
     enabled: true
     secretStoreRef:
@@ -61,3 +64,34 @@ generic-app:
     - secretKey: ANTHROPIC_API_KEY
       remoteRef:
         key: /homelab/teupadel/litellm-key
+  # Credenciais Postgres vêm do Secret "teupadel-app" que o CNPG gera
+  # sozinho (gitops.cnpg/kustomize/teupadel), não de um ExternalSecret/SSM —
+  # é gerado no cluster, nunca sai dele. Mesmo namespace ("teupadel"), por
+  # isso o secretKeyRef simples funciona sem replicação cross-namespace.
+  # PGHOST/PGPORT/PGUSER/PGPASSWORD são nomes padrão libpq — psycopg2/
+  # asyncpg leem-nos automaticamente, sem precisar montar um DATABASE_URL à
+  # mão. Chaves confirmadas contra o uso real em
+  # gitops.backstage.homelab/helm/backstage/values.yaml (host/port/user/
+  # password) — não "uri"/"username" como se poderia assumir de outras
+  # stacks CNPG.
+  env:
+    - name: PGHOST
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: host
+    - name: PGPORT
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: port
+    - name: PGUSER
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: user
+    - name: PGPASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: password
