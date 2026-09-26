@@ -5,7 +5,7 @@ generic-app:
     name: "teupadel"
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/ui"
-    tag: "12725a9"
+    tag: "f2e6987"
   service:
     port: 80
     targetPort: 3000 # porta real que o container escuta (non-root, generic-app 0.7.0)
