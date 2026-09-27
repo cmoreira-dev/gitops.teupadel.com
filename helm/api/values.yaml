@@ -5,7 +5,7 @@ generic-app:
     name: "teupadel"
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api"
-    tag: "29fb3d3"
+    tag: "58e6c47"
   service:
     port: 80
     targetPort: 8080 # porta real que o container escuta
@@ -75,23 +75,23 @@ generic-app:
   # password) — não "uri"/"username" como se poderia assumir de outras
   # stacks CNPG.
   env:
-    - name: PGHOST
-      valueFrom:
-        secretKeyRef:
-          name: teupadel-app
-          key: host
-    - name: PGPORT
-      valueFrom:
-        secretKeyRef:
-          name: teupadel-app
-          key: port
-    - name: PGUSER
-      valueFrom:
-        secretKeyRef:
-          name: teupadel-app
-          key: user
-    - name: PGPASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: teupadel-app
-          key: password
+  - name: PGHOST
+    valueFrom:
+      secretKeyRef:
+        name: teupadel-app
+        key: host
+  - name: PGPORT
+    valueFrom:
+      secretKeyRef:
+        name: teupadel-app
+        key: port
+  - name: PGUSER
+    valueFrom:
+      secretKeyRef:
+        name: teupadel-app
+        key: user
+  - name: PGPASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: teupadel-app
+        key: password
