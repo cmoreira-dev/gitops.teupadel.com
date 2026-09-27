@@ -5,7 +5,7 @@ generic-app:
     name: "teupadel"
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/processor"
-    tag: "c8ed127"
+    tag: "b23d112"
   service:
     port: 8000
     targetPort: 8000
@@ -18,13 +18,11 @@ generic-app:
   runtimeClassName: "nvidia"
   nodeSelector:
     nvidia.com/gpu.present: "true"
-
   # Só há 2 slots de GPU (time-slicing replicas: 2) e o Ollama tem 1. Um
   # RollingUpdate faria surge de um 2º pod do processor que não conseguiria
   # agendar → rollout preso. Recreate: mata o pod antigo primeiro.
   strategy:
     type: Recreate
-
   resources:
     requests:
       cpu: "500m"
@@ -33,7 +31,6 @@ generic-app:
       cpu: "3"
       memory: "4Gi"
       nvidia.com/gpu: 1
-
   # generic-app 0.5.0 herda o securityContext restricted de 0.4.0. O processor
   # corre como non-root (uid 10001) e só escreve em /tmp e no home do appuser
   # (cache CUDA) — o default restricted não mete readOnlyRootFilesystem, adota limpo.
@@ -47,7 +44,6 @@ generic-app:
       type: RuntimeDefault
     capabilities:
       drop: ["ALL"]
-
   probes:
     startup:
       enabled: true
@@ -67,7 +63,6 @@ generic-app:
       # carga de GC / troca de contexto de GPU o probe pode passar de 1s.
       timeoutSeconds: 5
       failureThreshold: 6
-
   configMap:
     enabled: true
     injectAsEnv: true
