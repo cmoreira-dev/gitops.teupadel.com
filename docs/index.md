@@ -19,6 +19,22 @@ Reconciled by ArgoCD (`argocd/` folder), with `argocd-image-updater`
 (in `gitops.core-addons`) writing back new image tags to `helm/*/values.yaml`
 as CI publishes them to ECR.
 
+## API runtime: migrations and secrets
+
+- **Migrations:** the API Deployment runs `python -m migrate` in an
+  `initContainer` (same image, same `securityContext`) before any replica serves
+  traffic; an advisory lock serializes concurrent replicas. If it fails the pod
+  stays in `Init:Error` and the previous ReplicaSet keeps serving.
+- **Secrets:** the `teupadel-api-secret` ExternalSecret reads SSM parameters
+  `/teupadel/google/oauth/{client_id,client_secret}`, `/teupadel/api/session-secret-key`
+  (must be identical across replicas), `/teupadel/ses/api` (SES credentials) and
+  the LiteLLM key under `/homelab/`. The `ClusterSecretStore` user
+  (`external-secrets-operator`) needs its IAM policy to allow both
+  `parameter/homelab/*` and `parameter/teupadel/*` — a missing path shows as
+  `SecretSyncedError` and the pod silently loses those variables.
+- **Database:** credentials come from the CNPG-generated `teupadel-app` Secret
+  (`PGHOST`/`PGUSER`/…), database `teupadeldb`.
+
 ## Networking
 
 Ingress is NGINX Gateway Fabric (Gateway API) behind a Cloudflare tunnel,
