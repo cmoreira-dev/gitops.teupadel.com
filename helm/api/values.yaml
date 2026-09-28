@@ -23,8 +23,6 @@ generic-app:
   # initContainer, mantendo o perfil restricted também neste processo.
   initContainers:
   - name: migrate
-    image: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api:65d9db1"
-    imagePullPolicy: IfNotPresent
     command: ["python", "-m", "migrate"]
     securityContext:
       runAsUser: 10001
