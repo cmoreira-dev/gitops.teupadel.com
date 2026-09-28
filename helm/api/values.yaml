@@ -18,6 +18,48 @@ generic-app:
     allowPrivilegeEscalation: false
     capabilities:
       drop: ["ALL"]
+  # Executa o schema antes de qualquer réplica da API receber tráfego. O chart
+  # genérico aplica o podSecurityContext ao pod e este securityContext ao
+  # initContainer, mantendo o perfil restricted também neste processo.
+  initContainers:
+  - name: migrate
+    image: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/api:65d9db1"
+    imagePullPolicy: IfNotPresent
+    command: ["python", "-m", "migrate"]
+    securityContext:
+      runAsUser: 10001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+    env:
+    - name: PGHOST
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: host
+    - name: PGPORT
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: port
+    - name: PGUSER
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: user
+    - name: PGPASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: teupadel-app
+          key: password
+    - name: PGDATABASE
+      value: "teupadeldb"
+    envFrom:
+    - configMapRef:
+        name: teupadel-api
+    - secretRef:
+        name: teupadel-api-secret
   probes:
     liveness:
       enabled: true
