@@ -9,6 +9,26 @@ generic-app:
   service:
     port: 80
     targetPort: 3000 # porta real que o container escuta (non-root, generic-app 0.7.0)
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+  probes:
+    liveness:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
+    readiness:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
   httpRoute:
     enabled: true
     gateway:
