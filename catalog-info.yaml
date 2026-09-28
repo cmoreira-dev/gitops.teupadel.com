@@ -32,3 +32,46 @@ spec:
     - component:teupadel-api
     - component:teupadel-ui
     - component:pose-estimation
+---
+# External and stateful dependencies of the teupadel product, modelled as
+# Resources so the API's dependsOn graph shows what it actually needs.
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: teupadel-db
+  description: >-
+    PostgreSQL database (CloudNativePG Cluster `teupadel`, database
+    `teupadeldb`) — accounts, sessions, bolas ledger, report history, waitlist.
+    Schema applied by the API's `migrate` init container.
+  tags:
+    - postgres
+spec:
+  type: database
+  owner: platform-team
+  system: teupadel
+  dependsOn:
+    - component:cnpg
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: teupadel-amazon-ses
+  description: >-
+    Amazon SES (us-east-1, identity `teupadel.com`) — sends the magic-link
+    e-mail. Still in sandbox: only verified identities receive mail.
+spec:
+  type: email-service
+  owner: platform-team
+  system: teupadel
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: teupadel-google-oauth
+  description: >-
+    Google OAuth client (Google Cloud) used by "Sign in with Google";
+    credentials live in SSM under /teupadel/google/oauth/.
+spec:
+  type: identity-provider
+  owner: platform-team
+  system: teupadel
