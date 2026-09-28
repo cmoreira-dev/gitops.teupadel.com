@@ -9,6 +9,26 @@ generic-app:
   service:
     port: 80
     targetPort: 8080 # porta real que o container escuta
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    runAsUser: 10001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+  probes:
+    liveness:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
+    readiness:
+      enabled: true
+      httpGet:
+        path: /health
+        port: http
   # Sem httpRoute: a API não é exposta publicamente. A UI fala com ela pelo
   # Service interno (teupadel-api.teupadel.svc.cluster.local). Ver
   # ui/values.yaml (PADEL_API_URL) e o cloudflared em gitops.core-addons.
