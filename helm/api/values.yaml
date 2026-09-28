@@ -71,6 +71,13 @@ generic-app:
       # Nome fixo, não segredo — definido em gitops.cnpg/kustomize/teupadel/database.yaml
       # (bootstrap.initdb.database).
       PGDATABASE: "teupadeldb"
+      # --- Autenticação (Fase 4 — ver api.ia.teupadel.com/auth.py) ---
+      # UI pública, usada para montar links de e-mail e o redirect_uri do
+      # Google (esta API nunca é pública — ver comentário do httpRoute acima).
+      FRONTEND_URL: "https://teupadel.com"
+      SES_REGION: "us-east-1"
+      SES_SENDER: "TeuPadel <noreply@teupadel.com>"
+      SES_CONFIGURATION_SET: "teupadel-transactional"
   externalSecrets:
     enabled: true
     secretStoreRef:
@@ -84,6 +91,31 @@ generic-app:
     - secretKey: ANTHROPIC_API_KEY
       remoteRef:
         key: /homelab/teupadel/litellm-key
+    # --- Autenticação (Fase 4) ---
+    - secretKey: GOOGLE_OAUTH_CLIENT_ID
+      remoteRef:
+        key: /teupadel/google/oauth/client_id
+    - secretKey: GOOGLE_OAUTH_CLIENT_SECRET
+      remoteRef:
+        key: /teupadel/google/oauth/client_secret
+    # Assina o cookie de state do fluxo OAuth do Google — tem de ser igual
+    # em todos os replicas (replicaCount: 2), daí vir do SSM e não ser gerado
+    # em runtime por cada pod (ver aviso em main.py se esta faltar).
+    - secretKey: SESSION_SECRET_KEY
+      remoteRef:
+        key: /teupadel/api/session-secret-key
+    # /teupadel/ses/api é um único JSON (access_key_id/secret_access_key/
+    # smtp_username/smtp_password — ver iac-mail-routing/module/aws-ses-smtp-user);
+    # `property` extrai só o par de chaves que o boto3 (email_sender.py) lê
+    # automaticamente via AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY.
+    - secretKey: AWS_ACCESS_KEY_ID
+      remoteRef:
+        key: /teupadel/ses/api
+        property: access_key_id
+    - secretKey: AWS_SECRET_ACCESS_KEY
+      remoteRef:
+        key: /teupadel/ses/api
+        property: secret_access_key
   # Credenciais Postgres vêm do Secret "teupadel-app" que o CNPG gera
   # sozinho (gitops.cnpg/kustomize/teupadel), não de um ExternalSecret/SSM —
   # é gerado no cluster, nunca sai dele. Mesmo namespace ("teupadel"), por
