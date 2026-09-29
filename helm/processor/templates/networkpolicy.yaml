@@ -1,0 +1,21 @@
+# O processor (pose estimation, GPU) só recebe pedidos da API.
+# NOTA: o CNI atual (flannel) NÃO aplica NetworkPolicy — só tem efeito com um
+# CNI que a imponha (Cilium/Calico). Ver PENDENCIAS.md.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: teupadel-processor
+  namespace: teupadel
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: teupadel-processor
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: teupadel-api
+      ports:
+        - protocol: TCP
+          port: 8000

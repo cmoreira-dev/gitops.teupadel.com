@@ -1,0 +1,71 @@
+# A API não é pública: só a UI lhe fala (Service interno). O Postgres do CNPG
+# aceita apenas a API, o operador (status/reconciliação), as réplicas do
+# próprio cluster e o scrape de métricas do Alloy (PodMonitor).
+# NOTA: o CNI atual (flannel) NÃO aplica NetworkPolicy — só tem efeito com um
+# CNI que a imponha (Cilium/Calico). Ver PENDENCIAS.md.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: teupadel-api
+  namespace: teupadel
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: teupadel-api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: teupadel-ui
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: teupadel-postgres
+  namespace: teupadel
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: teupadel
+  policyTypes: [Ingress]
+  ingress:
+    # Aplicação
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: teupadel-api
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Operador CNPG (status HTTP e conexões de gestão)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cnpg-system
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 8000
+    # Réplicas/instâncias do mesmo cluster (replicação, pg_rewind)
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: teupadel
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 8000
+    # Métricas (PodMonitor → Alloy)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: alloy
+      ports:
+        - protocol: TCP
+          port: 9187
