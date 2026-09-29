@@ -1,0 +1,25 @@
+# Ingress só a partir do Gateway do teupadel.com (NGINX Gateway Fabric). O
+# cloudflared entra no cluster pelo Gateway, nunca fala com a UI diretamente.
+# NOTA: o CNI atual (flannel) NÃO aplica NetworkPolicy — isto só passa a ter
+# efeito com um CNI que a imponha (Cilium/Calico). Ver PENDENCIAS.md.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: teupadel-ui
+  namespace: teupadel
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: teupadel-ui
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: nginx-gateway
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: nginx-gateway-teupadel-com-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
