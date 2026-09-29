@@ -147,6 +147,11 @@ generic-app:
     - secretKey: SESSION_SECRET_KEY
       remoteRef:
         key: /teupadel/api/session-secret-key
+    # Cloudflare Turnstile (login): chave secreta do widget criado por IaC
+    # (iac.homelab-live-infra, unit aws/.../turnstile-ssm).
+    - secretKey: TURNSTILE_SECRET_KEY
+      remoteRef:
+        key: /teupadel/turnstile/secret-key
     # /teupadel/ses/api é um único JSON (access_key_id/secret_access_key/
     # smtp_username/smtp_password — ver iac-mail-routing/module/aws-ses-smtp-user);
     # `property` extrai só o par de chaves que o boto3 (email_sender.py) lê

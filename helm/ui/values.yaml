@@ -36,6 +36,18 @@ generic-app:
       namespace: nginx-gateway
     hostnames:
     - "www.teupadel.com"
+  # Chave pública do Turnstile (vem do Terraform, por isso via SSM em vez de
+  # hardcoded). A UI lê TURNSTILE_SITE_KEY em runtime (login/page.jsx).
+  externalSecrets:
+    enabled: true
+    secretStoreRef:
+      name: aws-ssm
+      kind: ClusterSecretStore
+    secretName: "teupadel-ui-secret"
+    data:
+    - secretKey: TURNSTILE_SITE_KEY
+      remoteRef:
+        key: /teupadel/turnstile/site-key
   configMap:
     enabled: true
     injectAsEnv: true
