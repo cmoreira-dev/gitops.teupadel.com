@@ -118,6 +118,9 @@ generic-app:
       SES_REGION: "us-east-1"
       SES_SENDER: "TeuPadel <noreply@teupadel.com>"
       SES_CONFIGURATION_SET: "teupadel-transactional"
+      # Fila SQS de eventos do SES (bounces/reclamações) consumida pelo worker da API
+      # (ses_events.py). Precisa do IAM (iac.homelab-live-infra, unit ses-smtp-user).
+      SES_EVENTS_QUEUE_URL: "https://sqs.us-east-1.amazonaws.com/344965637185/teupadel-ses-events"
   externalSecrets:
     enabled: true
     secretStoreRef:
