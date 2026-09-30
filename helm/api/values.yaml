@@ -121,6 +121,13 @@ generic-app:
       # Fila SQS de eventos do SES (bounces/reclamações) consumida pelo worker da API
       # (ses_events.py). Precisa do IAM (iac.homelab-live-infra, unit ses-smtp-user).
       SES_EVENTS_QUEUE_URL: "https://sqs.us-east-1.amazonaws.com/344965637185/teupadel-ses-events"
+      # Fila durável de análises (ver api.ia.teupadel.com/uploads.py): o browser envia o vídeo por
+      # partes, por URL pré-assinada, para este bucket da UE (IaC: aws/cmoreira-dev/us-east-1/
+      # s3-analysis-uploads); o worker da API processa e APAGA o vídeo. Usa as mesmas credenciais AWS
+      # do usuário teupadel-api (a policy do bucket está no IaC). Remover estas vars desliga a fila:
+      # /analyses* passa a dar 503 e o POST /analyse antigo continua a funcionar.
+      ANALYSIS_UPLOADS_BUCKET: "cmoreira-dev-teupadel-analysis-uploads-eu"
+      ANALYSIS_UPLOADS_REGION: "eu-west-1"
   externalSecrets:
     enabled: true
     secretStoreRef:
