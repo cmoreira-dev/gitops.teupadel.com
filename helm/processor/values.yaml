@@ -5,7 +5,7 @@ generic-app:
     name: "teupadel"
   image:
     repository: "344965637185.dkr.ecr.us-east-1.amazonaws.com/teupadel/processor"
-    tag: "fc16bc5"
+    tag: "48843de"
   service:
     port: 8000
     targetPort: 8000
